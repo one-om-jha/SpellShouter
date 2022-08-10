@@ -1,21 +1,32 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.UI;
 using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController instance;
 
-    private string buffer = "";
+    public string buffer = "";
     private string input = "";
+
+    private int health = 3;
 
     // Text
     [SerializeField]
     private TMP_Text bufferText;
+    [SerializeField]
+    private Image healthImage;
 
     private Camera cam;
+
+    public event Action onInput;
+    public event Action onAttack;
+
+    [SerializeField]
+    private GameObject slash;
 
     private void Awake() {
         if (instance == null) {
@@ -35,7 +46,9 @@ public class PlayerController : MonoBehaviour
         {
             input = Input.inputString;
             buffer += input;
-            cam.GetComponent<CameraManager>().StartShake(0.1f, 0.05f);
+            if (onInput != null) {
+                onInput();
+            }
         }
         
         // handle deleting input
@@ -49,10 +62,49 @@ public class PlayerController : MonoBehaviour
         {
             bufferText.text = buffer;
             buffer = "";
-            cam.GetComponent<CameraManager>().StartShake(0.2f, 0.2f);
+            if (onAttack != null) {
+                onAttack();
+            }
         }
 
+        buffer = buffer.ToLower();
         // update text
         bufferText.text = buffer;
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        healthImage.rectTransform.sizeDelta = new Vector2(health * 100, healthImage.rectTransform.sizeDelta.y);
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.tag == "Enemy") {
+            health--;
+            Instantiate(slash, transform.position, Quaternion.identity);
+            hitStop();
+            if (health == 0) {
+                Die();
+            }
+            Destroy(other.gameObject);
+        }
+    }
+
+    private void Die()
+    {
+        Destroy(gameObject);
+    }
+
+
+    public void hitStop()
+    {
+        StartCoroutine(HitStop());
+    }
+
+    IEnumerator HitStop()
+    {
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(0.1f);
+        Time.timeScale = 1f;
     }
 }
