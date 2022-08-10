@@ -1,18 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private string buffer = "";
+    private string input = "";
 
-    // Update is called once per frame
-    void Update()
-    {
+    [SerializeField]
+    private TMP_Text bufferText;
+
+    private void Update() {
+        // get input from keyboard
+        if (Input.inputString != input)
+        {
+            input = Input.inputString;
+            buffer += input;
+        }
         
+        // handle deleting input
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            buffer = buffer.Substring(0, buffer.Length - 2);
+        }
+
+        // handle enter
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            bufferText.text = buffer;
+            buffer = "";
+        }
+
+        // update text
+        bufferText.text = buffer;
     }
 }
