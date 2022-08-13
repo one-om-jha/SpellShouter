@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,9 +19,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private TMP_Text bufferText;
 
-    [SerializeField]
-    private Image healthImage;
-
     private Camera cam;
 
     public event Action onInput;
@@ -30,7 +28,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private GameObject slash;
 
-    private bool suspended = false;
+    private bool suspended = true;
+    private SpriteRenderer spriteRenderer;
+
+    public TMP_Text waveText;
+    public Image waveImage;
+    public Image healthImage;
+
+    public Canvas combatPanel;
 
     private void Awake()
     {
@@ -48,6 +53,9 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         cam = Camera.main;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        bufferText = GetComponentInChildren<TMP_Text>();
+        Suspend();
     }
 
     private void Update()
@@ -92,7 +100,7 @@ public class PlayerController : MonoBehaviour
     private void UpdateUI()
     {
         healthImage.rectTransform.sizeDelta = new Vector2(
-            health * 100,
+            health * 80,
             healthImage.rectTransform.sizeDelta.y
         );
     }
@@ -132,17 +140,39 @@ public class PlayerController : MonoBehaviour
     public void Suspend()
     {
         suspended = true;
-        bufferText.enabled = false;
+        if (bufferText)
+        {
+            bufferText.enabled = false;
+        }
+        spriteRenderer.enabled = false;
     }
 
     public void Resume()
     {
         suspended = false;
-        bufferText.enabled = true;
+        if (bufferText)
+        {
+            bufferText.enabled = true;
+        }
+        spriteRenderer.enabled = true;
     }
 
     public void markKill()
     {
         onKill();
+    }
+
+    public void LoadLevelSelect()
+    {
+        Suspend();
+        combatPanel.enabled = false;
+        SceneManager.LoadScene("LevelSelect");
+    }
+
+    public void LoadLevel(string level)
+    {
+        Resume();
+        combatPanel.enabled = true;
+        SceneManager.LoadScene(level);
     }
 }

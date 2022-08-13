@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class WaveSpawner : MonoBehaviour
 {
@@ -17,10 +18,8 @@ public class WaveSpawner : MonoBehaviour
 
     public int costScale = 10;
 
-    public int waveDuration;
-    
-    private float waveTimer;
-    private float spawnInterval;
+    public float spawnInterval;
+
     private float spawnTimer;
     private int waveKills;
     private int enemyCount;
@@ -28,6 +27,10 @@ public class WaveSpawner : MonoBehaviour
     private float spawnOffset = 300f;
 
     private Camera cam;
+
+    private TMP_Text waveText;
+
+    private Image waveImage;
 
     enum WaveState
     {
@@ -47,6 +50,8 @@ public class WaveSpawner : MonoBehaviour
         cam = Camera.main;
         waveState = WaveState.WAITING;
         currWave = 1;
+        waveText = PlayerController.instance.waveText;
+        waveImage = PlayerController.instance.waveImage;
         GenerateWave();
     }
 
@@ -72,10 +77,9 @@ public class WaveSpawner : MonoBehaviour
             else
             {
                 spawnTimer -= Time.fixedDeltaTime;
-                waveTimer -= Time.fixedDeltaTime;
             }
 
-            if (WaveOver()) 
+            if (WaveOver())
             {
                 waveState = WaveState.DONE;
             }
@@ -93,16 +97,15 @@ public class WaveSpawner : MonoBehaviour
             else
             {
                 // Level Over!
-                PlayerController.instance.Suspend();
-                StartCoroutine(LoadNextLevel());
+                PlayerController.instance.LoadLevelSelect();
             }
         }
     }
 
-    IEnumerator LoadNextLevel()
+    private void LateUpdate()
     {
-        yield return new WaitForSeconds(1f);
-        SceneManager.LoadScene("LevelSelect");
+        waveText.text = "Wave " + currWave;
+        waveImage.fillAmount = waveKills / (float)enemyCount;
     }
 
     public bool WaveOver()
@@ -119,10 +122,6 @@ public class WaveSpawner : MonoBehaviour
     {
         waveValue = currWave * costScale;
         GenerateEnemies();
-
-        if (enemiesToSpawn.Count > 0)
-            spawnInterval = waveDuration / enemiesToSpawn.Count;
-        waveTimer = waveDuration;
 
         waveState = WaveState.SPAWNING;
     }
