@@ -76,9 +76,14 @@ public class EnemyController : MonoBehaviour
         UpdateText();
     }
 
-    private void Update() {
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
-        
+    private void Update()
+    {
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            targetPosition,
+            speed * Time.deltaTime
+        );
+
         if (state == State.Visible)
         {
             if (damage >= health.Length)
@@ -127,6 +132,7 @@ public class EnemyController : MonoBehaviour
         state = State.Dead;
         GameObject child = Instantiate(slash, transform.position, Quaternion.identity);
         child.transform.parent = transform;
+        PlayerController.instance.markKill();
         Destroy(gameObject, 0.25f);
     }
 }

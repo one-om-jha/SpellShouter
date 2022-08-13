@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     // Text
     [SerializeField]
     private TMP_Text bufferText;
+
     [SerializeField]
     private Image healthImage;
 
@@ -24,66 +25,87 @@ public class PlayerController : MonoBehaviour
 
     public event Action onInput;
     public event Action onAttack;
+    public event Action onKill;
 
     [SerializeField]
     private GameObject slash;
 
-    private void Awake() {
-        if (instance == null) {
+    private bool suspended = false;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
             instance = this;
-        } else {
+        }
+        else
+        {
             Destroy(gameObject);
         }
+        DontDestroyOnLoad(gameObject);
     }
 
-    private void Start() {
+    private void Start()
+    {
         cam = Camera.main;
     }
 
-    private void Update() {
-        // get input from keyboard
-        if (Input.inputString != input)
+    private void Update()
+    {
+        if (!suspended)
         {
-            input = Input.inputString;
-            buffer += input;
-            if (onInput != null) {
-                onInput();
+            // get input from keyboard
+            if (Input.inputString != input)
+            {
+                input = Input.inputString;
+                buffer += input;
+                if (onInput != null)
+                {
+                    onInput();
+                }
             }
-        }
-        
-        // handle deleting input
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            buffer = buffer.Substring(0, buffer.Length - 2);
-        }
 
-        // handle enter
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
+            // handle deleting input
+            if (Input.GetKeyDown(KeyCode.Backspace))
+            {
+                buffer = buffer.Substring(0, buffer.Length - 2);
+            }
+
+            // handle enter
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                bufferText.text = buffer;
+                buffer = "";
+                if (onAttack != null)
+                {
+                    onAttack();
+                }
+            }
+
+            buffer = buffer.ToLower();
+            // update text
             bufferText.text = buffer;
-            buffer = "";
-            if (onAttack != null) {
-                onAttack();
-            }
+            UpdateUI();
         }
-
-        buffer = buffer.ToLower();
-        // update text
-        bufferText.text = buffer;
-        UpdateUI();
     }
 
     private void UpdateUI()
     {
-        healthImage.rectTransform.sizeDelta = new Vector2(health * 100, healthImage.rectTransform.sizeDelta.y);
+        healthImage.rectTransform.sizeDelta = new Vector2(
+            health * 100,
+            healthImage.rectTransform.sizeDelta.y
+        );
     }
 
-    private void OnCollisionEnter2D(Collision2D other) {
-        if (other.gameObject.tag == "Enemy") {
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
             health--;
             Instantiate(slash, transform.position, Quaternion.identity);
             hitStop();
-            if (health == 0) {
+            if (health == 0)
+            {
                 Die();
             }
             Destroy(other.gameObject);
@@ -95,7 +117,6 @@ public class PlayerController : MonoBehaviour
         Destroy(gameObject);
     }
 
-
     public void hitStop()
     {
         StartCoroutine(HitStop());
@@ -106,5 +127,22 @@ public class PlayerController : MonoBehaviour
         Time.timeScale = 0f;
         yield return new WaitForSecondsRealtime(0.1f);
         Time.timeScale = 1f;
+    }
+
+    public void Suspend()
+    {
+        suspended = true;
+        bufferText.enabled = false;
+    }
+
+    public void Resume()
+    {
+        suspended = false;
+        bufferText.enabled = true;
+    }
+
+    public void markKill()
+    {
+        onKill();
     }
 }

@@ -6,7 +6,8 @@ using UnityEngine.Events;
 
 public class CameraManager : MonoBehaviour
 {
-    private void Start() {
+    private void Start()
+    {
         PlayerController.instance.onInput += playerInput;
         PlayerController.instance.onAttack += playerAttack;
     }
