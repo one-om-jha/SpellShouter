@@ -13,6 +13,7 @@ public class WaveSpawner : MonoBehaviour
     [SerializeField]
     private int currWave;
     private int waveValue;
+    private int currentTier;
 
     public int waveCount;
 
@@ -24,7 +25,7 @@ public class WaveSpawner : MonoBehaviour
     private int waveKills;
     private int enemyCount;
 
-    private float spawnOffset = 300f;
+    private float spawnOffset = 100f;
 
     private Camera cam;
 
@@ -57,6 +58,7 @@ public class WaveSpawner : MonoBehaviour
 
     private void FixedUpdate()
     {
+        currentTier = PlayerController.instance.currentTier;
         if (waveState == WaveState.SPAWNING)
         {
             // Clean up enemiesToSpawn by removing nulls
@@ -92,6 +94,7 @@ public class WaveSpawner : MonoBehaviour
                 waveState = WaveState.WAITING;
                 enemyCount = 0;
                 waveKills = 0;
+                PlayerController.instance.WaveComplete();
                 GenerateWave();
             }
             else
@@ -120,7 +123,7 @@ public class WaveSpawner : MonoBehaviour
 
     public void GenerateWave()
     {
-        waveValue = currWave * costScale;
+        waveValue = PlayerController.instance.difficulty * costScale;
         GenerateEnemies();
 
         waveState = WaveState.SPAWNING;
@@ -185,5 +188,6 @@ public class WaveSpawner : MonoBehaviour
     {
         public GameObject enemyPrefab;
         public int cost;
+        public int tier;
     }
 }

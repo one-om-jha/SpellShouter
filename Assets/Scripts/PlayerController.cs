@@ -37,6 +37,10 @@ public class PlayerController : MonoBehaviour
 
     public Canvas combatPanel;
 
+    public int difficulty = 0;
+    public int[] difficultyThresholds = { 1, 3, 5, 7, 9 };
+    public int currentTier = 0;
+
     private void Awake()
     {
         if (instance == null)
@@ -60,6 +64,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        getCurrentTier();
         if (!suspended)
         {
             // get input from keyboard
@@ -174,5 +179,23 @@ public class PlayerController : MonoBehaviour
         Resume();
         combatPanel.enabled = true;
         SceneManager.LoadScene(level);
+    }
+
+    public void WaveComplete()
+    {
+        difficulty++;
+    }
+
+    public void getCurrentTier()
+    {
+        // updates currentTier by comparing difficulty to difficultyThresholds
+        for (int i = 0; i < difficultyThresholds.Length; i++)
+        {
+            if (difficulty < difficultyThresholds[i])
+            {
+                currentTier = i;
+                break;
+            }
+        }
     }
 }
