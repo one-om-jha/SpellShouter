@@ -8,8 +8,8 @@ public class CameraManager : MonoBehaviour
 {
     private void Start()
     {
-        PlayerController.instance.onInput += playerInput;
-        PlayerController.instance.onAttack += playerAttack;
+        Player.instance.onInput += playerInput;
+        Player.instance.onAttack += playerAttack;
     }
 
     private void playerInput()
