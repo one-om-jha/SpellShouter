@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     public int levelThreshold;
 
     public List<GameObject> upgrades = new List<GameObject>();
+    public List<Upgrades> currentUpgrades = new List<Upgrades>();
 
     // EVENTS
     public event Action onKill;
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text scoreText;
     public Animator upgradeAnimator;
     public RectTransform upgradePanel;
+    public TMP_Text upgradeText;
 
     // UPGRADE REFERENCES
     public Item item1Button;
@@ -73,34 +75,52 @@ public class GameManager : MonoBehaviour
 
     public void Upgrade()
     {
-        gameState = GameState.Upgrade;
-        LeanTween.moveY(upgradePanel, 0, 0.25f).setEase(LeanTweenType.easeOutBack);
+        if (upgrades.Count > 0)
+        {
+            gameState = GameState.Upgrade;
+            LeanTween.moveY(upgradePanel, 0, 0.25f).setEase(LeanTweenType.easeOutBack);
+            // select random upgrade
+            int random1 = UnityEngine.Random.Range(0, upgrades.Count);
+            int random2 = UnityEngine.Random.Range(0, upgrades.Count);
 
-        // select random upgrade
-        int random1 = UnityEngine.Random.Range(0, upgrades.Count);
-        int random2 = UnityEngine.Random.Range(0, upgrades.Count);
-
-        // set upgrade text
-        item1Button.item = random1;
-        item2Button.item = random2;
-        item1Button.UpdateItem();
-        item2Button.UpdateItem();
+            // set upgrade text
+            item1Button.item = random1;
+            item2Button.item = random2;
+            item1Button.UpdateItem();
+            item2Button.UpdateItem();
+        }
     }
 
     public void UpdateUI()
     {
         scoreText.text = "Score " + score + "\nCombo x" + combo;
+        upgradeText.text = "";
+        for (int i = 0; i < currentUpgrades.Count; i++)
+        {
+            upgradeText.text += currentUpgrades[i].upgradeName + "\n";
+        }
     }
 
     public void SpawnUpgrade(int itemNumber)
     {
-        // spawn upgrade
-        GameObject upgrade = Instantiate(upgrades[itemNumber]);
-        upgrade.transform.position = new Vector3(UnityEngine.Random.Range(-2.5f, 2.5f), UnityEngine.Random.Range(2.5f, 5f), 0);
-        upgrade.transform.SetParent(transform);
+        if (upgrades.Count > 0)
+        {
+            // spawn upgrade
+            GameObject upgrade = Instantiate(upgrades[itemNumber]);
+            upgrades.RemoveAt(itemNumber);
+            upgrade.transform.position = new Vector3(
+                UnityEngine.Random.Range(-2.5f, 2.5f),
+                UnityEngine.Random.Range(2.5f, 5f),
+                0
+            );
+            upgrade.transform.SetParent(transform);
 
-        gameState = GameState.Combat;
-        LeanTween.moveY(upgradePanel, 1080, 0.25f).setEase(LeanTweenType.easeOutBack);
+            currentUpgrades.Add(upgrade.GetComponent<Upgrades>());
+            UpdateUI();
+
+            gameState = GameState.Combat;
+            LeanTween.moveY(upgradePanel, 1080, 0.25f).setEase(LeanTweenType.easeOutBack);
+        }
     }
 
     public void markKill()

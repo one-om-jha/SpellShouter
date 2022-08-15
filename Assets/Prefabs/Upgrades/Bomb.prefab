@@ -46,4 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Bomb
   icon: {fileID: -1218322596, guid: d078c144aa3664e9994c56304d2afe74, type: 3}
-  description: Cast [BOMB] to mark all visible enemies as vulnerable!
+  description: Cast [BOMB] to mark all visible enemies as vulnerable! One Time Use
+  cast: bomb

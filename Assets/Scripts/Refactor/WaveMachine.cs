@@ -26,7 +26,7 @@ public class WaveMachine : MonoBehaviour
     private float spawnOffset = 100f;
     private Camera cam;
     private List<GameObject> enemiesToSpawn = new List<GameObject>();
-    private List<GameObject> spawnedEnemies = new List<GameObject>();
+    public List<GameObject> spawnedEnemies = new List<GameObject>();
 
     // REFERENCES
     private GameManager gm;

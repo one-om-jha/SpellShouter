@@ -14,7 +14,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     public GameObject slash;
 
-    enum State
+    public enum State
     {
         Invisible,
         Visible,
@@ -22,7 +22,7 @@ public class EnemyController : MonoBehaviour
         Dead
     }
 
-    private State state = State.Visible;
+    public State state = State.Visible;
 
     private TMP_Text healthText;
 
