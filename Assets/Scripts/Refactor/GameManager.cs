@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState {
+    public enum GameState
+    {
         Title,
         Combat,
         Upgrade,
@@ -19,28 +22,93 @@ public class GameManager : MonoBehaviour
     public int score;
     public int combo;
     public int wave;
+    public int levelThreshold;
+
+    public List<GameObject> upgrades = new List<GameObject>();
 
     // EVENTS
     public event Action onKill;
 
-    private void Awake() {
-        if (instance == null) {
+    // REFERENCES
+    public TMP_Text scoreText;
+    public Animator upgradeAnimator;
+    public RectTransform upgradePanel;
+
+    // UPGRADE REFERENCES
+    public Item item1Button;
+    public Item item2Button;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
             instance = this;
-        } else {
+        }
+        else
+        {
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Start() {
+    private void Start()
+    {
+        score = 0;
+        combo = 0;
+        levelThreshold = 100;
         gameState = GameState.Combat;
+    }
+
+    private void Update()
+    {
+        if (gameState == GameState.Combat)
+        {
+            if (score > levelThreshold)
+            {
+                levelThreshold *= 3;
+                Upgrade();
+            }
+        }
+    }
+
+    public void Upgrade()
+    {
+        gameState = GameState.Upgrade;
+        LeanTween.moveY(upgradePanel, 0, 0.25f).setEase(LeanTweenType.easeOutBack);
+
+        // select random upgrade
+        int random1 = UnityEngine.Random.Range(0, upgrades.Count);
+        int random2 = UnityEngine.Random.Range(0, upgrades.Count);
+
+        // set upgrade text
+        item1Button.item = random1;
+        item2Button.item = random2;
+        item1Button.UpdateItem();
+        item2Button.UpdateItem();
+    }
+
+    public void UpdateUI()
+    {
+        scoreText.text = "Score " + score + "\nCombo x" + combo;
+    }
+
+    public void SpawnUpgrade(int itemNumber)
+    {
+        // spawn upgrade
+        GameObject upgrade = Instantiate(upgrades[itemNumber]);
+        upgrade.transform.position = new Vector3(UnityEngine.Random.Range(-2.5f, 2.5f), UnityEngine.Random.Range(2.5f, 5f), 0);
+        upgrade.transform.SetParent(transform);
+
+        gameState = GameState.Combat;
+        LeanTween.moveY(upgradePanel, 1080, 0.25f).setEase(LeanTweenType.easeOutBack);
     }
 
     public void markKill()
     {
-        score += combo;
+        score += combo * 100;
         combo++;
         onKill();
+        UpdateUI();
     }
 
     public void hitStop()

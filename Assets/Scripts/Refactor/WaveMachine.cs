@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class WaveMachine : MonoBehaviour
 {
+    public static WaveMachine instance;
+
     // GAME VALUES
     public List<EnemyTier> enemyTiers = new List<EnemyTier>();
 
@@ -26,6 +30,21 @@ public class WaveMachine : MonoBehaviour
 
     // REFERENCES
     private GameManager gm;
+    public TMP_Text waveText;
+    public Image waveImage;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
@@ -39,6 +58,7 @@ public class WaveMachine : MonoBehaviour
     private void GenerateWave()
     {
         currWave++;
+        gm.wave++;
         waveValue = currWave * scale;
         waveKills = 0;
         GenerateEnemies();
@@ -125,7 +145,14 @@ public class WaveMachine : MonoBehaviour
             {
                 GenerateWave();
             }
+            UpdateUI();
         }
+    }
+
+    private void UpdateUI()
+    {
+        waveText.text = "Wave " + currWave;
+        waveImage.fillAmount = (float)waveKills / enemyCount;
     }
 
     private bool WaveOver()

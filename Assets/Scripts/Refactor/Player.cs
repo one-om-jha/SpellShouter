@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     private string input = "";
 
     // GAME VALUES
-    private int health;
+    public int health;
 
     // REFERENCES
     public TMP_Text bufferText;
@@ -65,17 +65,6 @@ public class Player : MonoBehaviour
                 }
             }
 
-            // delete input
-            if (Input.GetKeyDown(KeyCode.Backspace))
-            {
-                buffer = buffer.Substring(0, buffer.Length - 1);
-                if (onInput != null)
-                {
-                    onInput();
-                    // Fire Input Event
-                }
-            }
-
             // handle attack with return
             if (Input.GetKeyDown(KeyCode.Return))
             {
@@ -101,6 +90,8 @@ public class Player : MonoBehaviour
             Instantiate(slash, transform.position, Quaternion.identity);
             health -= 1;
             gm.hitStop();
+            gm.combo = 0;
+            gm.UpdateUI();
             if (health <= 0)
             {
                 Die();
@@ -127,5 +118,14 @@ public class Player : MonoBehaviour
     public string GetBuffer()
     {
         return buffer;
+    }
+
+    public void backspace()
+    {
+        if (buffer.Length - 2 >= 0)
+        {
+            buffer = buffer.Substring(0, buffer.Length - 2);
+            UpdateUI();
+        }
     }
 }

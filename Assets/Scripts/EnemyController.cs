@@ -78,21 +78,24 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            targetPosition,
-            speed * Time.deltaTime
-        );
-
-        if (state == State.Visible)
+        if (GameManager.instance.gameState == GameManager.GameState.Combat)
         {
-            if (damage >= health.Length)
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                targetPosition,
+                speed * Time.deltaTime
+            );
+
+            if (state == State.Visible)
             {
-                GameManager.instance.hitStop();
-                state = State.Vulnerable;
-                jitter.enabled = true;
-                healthText.color = Color.red;
-                GetComponent<SpriteRenderer>().color = Color.red;
+                if (damage >= health.Length)
+                {
+                    GameManager.instance.hitStop();
+                    state = State.Vulnerable;
+                    jitter.enabled = true;
+                    healthText.color = Color.red;
+                    GetComponent<SpriteRenderer>().color = Color.red;
+                }
             }
         }
     }
