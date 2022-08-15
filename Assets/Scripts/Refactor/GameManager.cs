@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,14 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameState gameState;
 
+    // GAME VALUES
+    public int score;
+    public int combo;
+    public int wave;
+
+    // EVENTS
+    public event Action onKill;
+
     private void Awake() {
         if (instance == null) {
             instance = this;
@@ -25,6 +34,13 @@ public class GameManager : MonoBehaviour
 
     private void Start() {
         gameState = GameState.Combat;
+    }
+
+    public void markKill()
+    {
+        score += combo;
+        combo++;
+        onKill();
     }
 
     public void hitStop()

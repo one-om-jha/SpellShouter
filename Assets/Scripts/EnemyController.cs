@@ -32,17 +32,17 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
-        PlayerController.instance.onInput += playerInput;
-        PlayerController.instance.onAttack += playerAttack;
+        Player.instance.onInput += playerInput;
+        Player.instance.onAttack += playerAttack;
         healthText = GetComponentInChildren<TMP_Text>();
         jitter = GetComponentInChildren<VertexJitter>();
 
-        targetPosition = PlayerController.instance.transform.position;
+        targetPosition = Player.instance.transform.position;
     }
 
     private void playerInput()
     {
-        string input = PlayerController.instance.buffer;
+        string input = Player.instance.GetBuffer();
         health = health.ToLower();
 
         // Find longest length substring that is shared between health and input
@@ -88,7 +88,7 @@ public class EnemyController : MonoBehaviour
         {
             if (damage >= health.Length)
             {
-                PlayerController.instance.hitStop();
+                GameManager.instance.hitStop();
                 state = State.Vulnerable;
                 jitter.enabled = true;
                 healthText.color = Color.red;
@@ -132,7 +132,7 @@ public class EnemyController : MonoBehaviour
         state = State.Dead;
         GameObject child = Instantiate(slash, transform.position, Quaternion.identity);
         child.transform.parent = transform;
-        PlayerController.instance.markKill();
+        GameManager.instance.markKill();
         Destroy(gameObject, 0.25f);
     }
 }

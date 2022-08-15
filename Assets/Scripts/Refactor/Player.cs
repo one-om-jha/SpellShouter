@@ -123,4 +123,9 @@ public class Player : MonoBehaviour
             healthImage.rectTransform.sizeDelta.y
         );
     }
+
+    public string GetBuffer()
+    {
+        return buffer;
+    }
 }
