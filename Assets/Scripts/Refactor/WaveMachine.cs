@@ -32,6 +32,7 @@ public class WaveMachine : MonoBehaviour
     private GameManager gm;
     public TMP_Text waveText;
     public Image waveImage;
+    public GameObject waveComplete;
 
     private void Awake()
     {
@@ -60,6 +61,8 @@ public class WaveMachine : MonoBehaviour
         currWave++;
         gm.wave++;
         waveValue = currWave * scale;
+        // spawn interval decreases as currWave goes up
+        spawnInterval = 1.5f - (currWave * 0.1f);
         waveKills = 0;
         GenerateEnemies();
         Debug.Log("Wave " + currWave + " generated with " + enemyCount + " enemies");
@@ -144,6 +147,7 @@ public class WaveMachine : MonoBehaviour
             if (WaveOver())
             {
                 GenerateWave();
+                Instantiate(waveComplete, Vector3.zero, Quaternion.identity);
             }
             UpdateUI();
         }

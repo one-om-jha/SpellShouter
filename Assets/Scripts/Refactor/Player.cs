@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     private string input = "";
 
     // GAME VALUES
-    public int health;
+    public int health = 3;
 
     // REFERENCES
     public TMP_Text bufferText;
@@ -92,12 +92,20 @@ public class Player : MonoBehaviour
             gm.hitStop();
             gm.combo = 0;
             gm.UpdateUI();
+            StartCoroutine(Flash());
             if (health <= 0)
             {
                 Die();
             }
             Destroy(other.gameObject);
         }
+    }
+
+    IEnumerator Flash()
+    {
+        spriteRenderer.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        spriteRenderer.color = Color.white;
     }
 
     private void Die()

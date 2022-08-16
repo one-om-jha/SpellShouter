@@ -11,7 +11,6 @@ public class EnemyController : MonoBehaviour
 
     private int damage = 0;
 
-    [SerializeField]
     public GameObject slash;
 
     public enum State
@@ -30,6 +29,8 @@ public class EnemyController : MonoBehaviour
 
     private Vector3 targetPosition;
 
+    public GameObject floaty;
+
     private void Start()
     {
         Player.instance.onInput += playerInput;
@@ -38,6 +39,8 @@ public class EnemyController : MonoBehaviour
         jitter = GetComponentInChildren<VertexJitter>();
 
         targetPosition = Player.instance.transform.position;
+
+        healthText.text = health;
     }
 
     private void playerInput()
@@ -135,6 +138,10 @@ public class EnemyController : MonoBehaviour
         state = State.Dead;
         GameObject child = Instantiate(slash, transform.position, Quaternion.identity);
         child.transform.parent = transform;
+        // GameObject child2 = Instantiate(GameManager.instance.floaty, transform.position, Quaternion.identity);
+        // child2.transform.parent = transform;
+        // child2.GetComponent<TMP_Text>().text = GameManager.instance.combo * 100 + "";
+        healthText.text = "+" + (GameManager.instance.combo * 100);
         GameManager.instance.markKill();
         Destroy(gameObject, 0.25f);
     }

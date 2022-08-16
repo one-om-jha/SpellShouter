@@ -28,6 +28,7 @@ public class Bomb : Upgrades
             }
         }
         yield return new WaitForSeconds(0.5f);
+        Player.instance.onAttack -= Cast;
         Destroy(gameObject);
     }
 }

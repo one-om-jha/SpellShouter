@@ -403,6 +403,8 @@
 "Assets/Scripts/Refactor/Upgrades/Backspace.cs"
 "Assets/Scripts/Refactor/Upgrades/Bomb.cs"
 "Assets/Scripts/Refactor/WaveMachine.cs"
+"Assets/Scripts/TitleScript.cs"
+"Assets/Scripts/WaveComplete.cs"
 "Assets/Scripts/WaveSpawner.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01_UGUI.cs"

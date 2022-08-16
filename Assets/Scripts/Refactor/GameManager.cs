@@ -40,6 +40,8 @@ public class GameManager : MonoBehaviour
     public Item item1Button;
     public Item item2Button;
 
+    public GameObject floaty;
+
     private void Awake()
     {
         if (instance == null)
@@ -57,7 +59,7 @@ public class GameManager : MonoBehaviour
     {
         score = 0;
         combo = 0;
-        levelThreshold = 100;
+        levelThreshold = 2000;
         gameState = GameState.Combat;
     }
 
@@ -67,7 +69,7 @@ public class GameManager : MonoBehaviour
         {
             if (score > levelThreshold)
             {
-                levelThreshold *= 3;
+                levelThreshold *= 4;
                 Upgrade();
             }
         }
@@ -78,7 +80,7 @@ public class GameManager : MonoBehaviour
         if (upgrades.Count > 0)
         {
             gameState = GameState.Upgrade;
-            LeanTween.moveY(upgradePanel, 0, 0.25f).setEase(LeanTweenType.easeOutBack);
+            LeanTween.moveY(upgradePanel, 0, 0.4f).setEase(LeanTweenType.easeOutBack);
             // select random upgrade
             int random1 = UnityEngine.Random.Range(0, upgrades.Count);
             int random2 = UnityEngine.Random.Range(0, upgrades.Count);
@@ -88,6 +90,15 @@ public class GameManager : MonoBehaviour
             item2Button.item = random2;
             item1Button.UpdateItem();
             item2Button.UpdateItem();
+        }
+
+        // remove nulls from currentUpgrades
+        for (int i = 0; i < currentUpgrades.Count; i++)
+        {
+            if (currentUpgrades[i] == null)
+            {
+                currentUpgrades.RemoveAt(i);
+            }
         }
     }
 
@@ -106,17 +117,20 @@ public class GameManager : MonoBehaviour
         if (upgrades.Count > 0)
         {
             // spawn upgrade
-            GameObject upgrade = Instantiate(upgrades[itemNumber]);
-            upgrades.RemoveAt(itemNumber);
-            upgrade.transform.position = new Vector3(
-                UnityEngine.Random.Range(-2.5f, 2.5f),
-                UnityEngine.Random.Range(2.5f, 5f),
-                0
-            );
-            upgrade.transform.SetParent(transform);
+            if (itemNumber < upgrades.Count)
+            {
+                GameObject upgrade = Instantiate(upgrades[itemNumber]);
+                upgrades.RemoveAt(itemNumber);
+                upgrade.transform.position = new Vector3(
+                    UnityEngine.Random.Range(-2.5f, 2.5f),
+                    UnityEngine.Random.Range(2.5f, 5f),
+                    0
+                );
+                upgrade.transform.SetParent(transform);
 
-            currentUpgrades.Add(upgrade.GetComponent<Upgrades>());
-            UpdateUI();
+                currentUpgrades.Add(upgrade.GetComponent<Upgrades>());
+                UpdateUI();
+            }
 
             gameState = GameState.Combat;
             LeanTween.moveY(upgradePanel, 1080, 0.25f).setEase(LeanTweenType.easeOutBack);
